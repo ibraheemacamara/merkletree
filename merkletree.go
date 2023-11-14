@@ -17,6 +17,11 @@ type Node struct {
 	Hash   []byte
 }
 
+type Proof struct {
+	Path [][]byte
+	Idxs []int
+}
+
 func NewMerkleTree(hashes [][]byte) (*MerkleTreee, error) {
 	if len(hashes) < 1 {
 		return &MerkleTreee{}, fmt.Errorf("failed to create merkle tree, not enough elements")
@@ -65,7 +70,7 @@ func (t *MerkleTreee) buildRootNode() *Node {
 	return nodes[0]
 }
 
-func (t *MerkleTreee) GetProof(hash []byte) ([][]byte, []int, error) {
+func (t *MerkleTreee) GetProof(hash []byte) (Proof, error) {
 	var path [][]byte
 	var indexes []int
 
@@ -83,11 +88,11 @@ func (t *MerkleTreee) GetProof(hash []byte) ([][]byte, []int, error) {
 				currentNode = parent
 				parent = currentNode.Parent
 			}
-			return path, indexes, nil
+			return Proof{Path: path, Idxs: indexes}, nil
 		}
 	}
 
-	return path, indexes, fmt.Errorf("not found corresponding data in the tree")
+	return Proof{}, fmt.Errorf("not found corresponding data in the tree")
 }
 
 func VerifyProof(rootHash []byte, value []byte, proofs [][]byte, indexes []int) bool {

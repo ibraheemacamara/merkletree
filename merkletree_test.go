@@ -79,10 +79,10 @@ func TestGetProof_ShouldFail(t *testing.T) {
 
 	myFakeFile := File{}
 
-	path, idxs, err := tree.GetProof(hashFile(myFakeFile))
+	proof, err := tree.GetProof(hashFile(myFakeFile))
 	assert.Error(t, err)
-	assert.Empty(t, path)
-	assert.EqualValues(t, 0, len(idxs))
+	assert.Empty(t, proof.Path)
+	assert.EqualValues(t, 0, len(proof.Idxs))
 }
 
 func TestGetProof_ShouldGetProof(t *testing.T) {
@@ -96,11 +96,11 @@ func TestGetProof_ShouldGetProof(t *testing.T) {
 		Text: "This is the content of file 2",
 	}
 
-	path, idxs, err := tree.GetProof(hashFile(file))
+	proof, err := tree.GetProof(hashFile(file))
 	assert.NoError(t, err)
-	assert.NotEmpty(t, path)
+	assert.NotEmpty(t, proof.Path)
 
 	//verify
-	isValid := VerifyProof(tree.RootNode.Hash, hashFile(file), path, idxs)
+	isValid := VerifyProof(tree.RootNode.Hash, hashFile(file), proof.Path, proof.Idxs)
 	assert.True(t, isValid)
 }
